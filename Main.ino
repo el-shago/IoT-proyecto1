@@ -173,6 +173,8 @@ char pass[] = SECRET_PASS;
 int keyIndex = 0;
 WiFiClient  client;
 
+
+
 unsigned long myChannelNumber = SECRET_CH_ID;
 const char * myWriteAPIKey = SECRET_WRITE_APIKEY;
 
@@ -204,7 +206,7 @@ void loop() {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(SECRET_SSID);
     while (WiFi.status() != WL_CONNECTED) {
-      WiFi.begin(ssid, pass);
+      int status = WiFi.begin(ssid, pass);
       Serial.print(".");
       delay(10000);
     }
@@ -216,6 +218,7 @@ void loop() {
   float humidity = dht.readHumidity();
   float temperatureDHT = dht.readTemperature();
   float altitude = bmp.readAltitude();
+
 
   // Cálculo de temperatura promedio cada 20 segundos
   unsigned long currentTime = millis();

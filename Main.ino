@@ -4,19 +4,18 @@
 #include <Adafruit_BMP085.h>
 #include "DHT.h"
 
-#define DHTPIN 2
-#define DHTTYPE DHT22
+#define DHTPIN 7
+#define DHTTYPE DHT11
+
 DHT dht(DHTPIN, DHTTYPE);
 
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 int keyIndex = 0;
-WiFiClient  client;
-
+WiFiClient client;
 
 unsigned long myChannelNumber = SECRET_CH_ID;
-const char * myWriteAPIKey = SECRET_WRITE_APIKEY;
-
+const char *myWriteAPIKey = SECRET_WRITE_APIKEY;
 Adafruit_BMP085 bmp;
 
 unsigned long lastAverageTime = 0;
@@ -36,7 +35,6 @@ void setup() {
 
   Serial.println(WiFi.status());
 
-
   ThingSpeak.begin(client);
 }
 
@@ -44,60 +42,55 @@ void loop() {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(SECRET_SSID);
+    
     while (WiFi.status() != WL_CONNECTED) {
       int status = WiFi.begin(ssid, pass);
       Serial.print(".");
       delay(10000);
     }
+
     Serial.println("\nConnected.");
   }
 
-  // Lecturas de sensores
   float temperatureBMP = bmp.readTemperature();
   float humidity = dht.readHumidity();
   float temperatureDHT = dht.readTemperature();
   float altitude = bmp.readAltitude();
 
-
-  // Cálculo de temperatura promedio cada 20 segundos
   unsigned long currentTime = millis();
+
   if (currentTime - lastAverageTime >= 20000) {
     float averageTemperature = totalTemperature / readingsCount;
 
-    // Envío de datos a ThingSpeak
     ThingSpeak.setField(1, averageTemperature);
     ThingSpeak.setField(2, humidity);
     ThingSpeak.setField(3, temperatureDHT);
     ThingSpeak.setField(4, altitude);
 
     int x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
+    
     if (x == 200) {
       Serial.println("Channel update successful.");
-    }
-    else {
+    } else {
       Serial.println("Problem updating channel. HTTP error code " + String(x));
     }
 
-    // Reiniciar variables para el siguiente ciclo de 20 segundos
     totalTemperature = 0.0;
     readingsCount = 0;
     lastAverageTime = currentTime;
   }
 
-  // Acumular lecturas para el promedio
   totalTemperature += temperatureBMP;
   readingsCount++;
 
-  // Imprimir valores obtenidos cada 2 segundos
-  Serial.print("Temperature BMP180: ");
+  Serial.print("Temperatura BMP180: ");
   Serial.println(temperatureBMP);
-  Serial.print("Humidity DHT22: ");
+  Serial.print("Humedad DHT11: ");
   Serial.println(humidity);
-  Serial.print("Temperature DHT22: ");
+  Serial.print("Temperatura DHT11: ");
   Serial.println(temperatureDHT);
-  Serial.print("Altitude BMP180: ");
+  Serial.print("Altura BMP180: ");
   Serial.println(altitude);
 
-  delay(2000);  // Espera 2 segundos antes de realizar la siguiente lectura y envío
+  delay(2000);
 }
-

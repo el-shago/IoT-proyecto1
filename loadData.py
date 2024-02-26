@@ -16,10 +16,10 @@ response = requests.get(url, params=params)
 
 data = response.json()["feeds"]
 
-temperature_promedio_dht11 = [float(entry['field1']) for entry in data]  # Temperatura promedio DHT11
-temperature_puntual_dht11 = [float(entry['field2']) for entry in data]  # Temperatura puntual DHT11
-humedad_promedio = [float(entry['field3']) for entry in data]             # Humedad promedio
-humedad_puntual = [float(entry['field4']) for entry in data]               # Humedad puntual
+temperatura_puntual = [float(entry['field1']) for entry in data]  # Temperatura puntual
+temperatura_promedio = [float(entry['field2']) for entry in data]  # Temperatura promedio
+humedad_puntual = [float(entry['field3']) for entry in data]             # Humedad puntual
+humedad_promedio = [float(entry['field4']) for entry in data]               # Humedad promedio
 
 # Gráficas
 timestamps = [datetime.strptime(entry['created_at'], "%Y-%m-%dT%H:%M:%SZ") for entry in data]
@@ -27,16 +27,16 @@ timestamps = [datetime.strptime(entry['created_at'], "%Y-%m-%dT%H:%M:%SZ") for e
 plt.figure(figsize=(10, 6))
 
 plt.subplot(2, 1, 1)
-plt.plot(timestamps, temperature_promedio_dht11, label="Temperatura Promedio DHT11")
-plt.plot(timestamps, temperature_puntual_dht11, label="Temperatura Puntual DHT11")
-plt.title('Comparativa de Temperatura DHT11')
+plt.plot(timestamps, temperatura_promedio, label="Temperatura Puntual")
+plt.plot(timestamps, temperatura_puntual, label="Temperatura Promedio")
+plt.title('Comparativa de Temperatura')
 plt.xlabel('Tiempo')
 plt.ylabel('Temperatura (°C)')
 plt.legend()
 
 plt.subplot(2, 1, 2)
-plt.plot(timestamps, humedad_promedio, label="Humedad Promedio")
-plt.plot(timestamps, humedad_puntual, label="Humedad Puntual")
+plt.plot(timestamps, humedad_promedio, label="Humedad Puntual")
+plt.plot(timestamps, humedad_puntual, label="Humedad Promedio")
 plt.title('Comparativa de Humedad')
 plt.xlabel('Tiempo')
 plt.ylabel('Humedad (%)')

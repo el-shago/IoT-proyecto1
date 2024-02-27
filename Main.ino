@@ -10,7 +10,7 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 char ssid[] = SECRET_SSID;
-//char pass[] = SECRET_PASS;
+char pass[] = SECRET_PASS;
 WiFiClient client;
 
 unsigned long myChannelNumber = SECRET_CH_ID;
@@ -45,7 +45,7 @@ void loop() {
     Serial.println(SECRET_SSID);
 
     while (WiFi.status() != WL_CONNECTED) {
-      int status = WiFi.begin(ssid);
+      int status = WiFi.begin(ssid, pass);
       Serial.print(".");
       delay(10000);
     }
